@@ -22,6 +22,12 @@ export async function apiClient<T>(
     headers.set('Content-Type', 'application/json');
   }
 
+  // Attach Bearer token from localStorage for reliable cross-origin auth (Netlify -> Render)
+  const token = localStorage.getItem('access_token');
+  if (token && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
   const response = await fetch(url, {
     ...options,
     headers,
@@ -35,8 +41,17 @@ export async function apiClient<T>(
   }
 
   if (!response.ok) {
+    if (response.status === 401) {
+      // Clear expired token on unauthorized
+      localStorage.removeItem('access_token');
+    }
     const errorMessage = data?.message || `Request failed with status ${response.status}`;
     throw new ApiError(response.status, errorMessage, data?.details);
+  }
+
+  // Save accessToken if returned from login/register/refresh
+  if (data?.data?.accessToken) {
+    localStorage.setItem('access_token', data.data.accessToken);
   }
 
   return data;

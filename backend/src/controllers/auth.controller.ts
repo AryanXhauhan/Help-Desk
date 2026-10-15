@@ -1,19 +1,21 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, CookieOptions } from 'express';
 import { AuthService } from '../services/auth.service.js';
 import { env } from '../config/env.js';
 import { AuthenticatedRequest } from '../types/index.js';
 
-const ACCESS_COOKIE_OPTIONS = {
+const isProduction = env.NODE_ENV === 'production';
+
+const ACCESS_COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
-  secure: env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
+  secure: isProduction,
+  sameSite: isProduction ? 'none' : 'lax',
   maxAge: 15 * 60 * 1000, // 15 mins
 };
 
-const REFRESH_COOKIE_OPTIONS = {
+const REFRESH_COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
-  secure: env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
+  secure: isProduction,
+  sameSite: isProduction ? 'none' : 'lax',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
