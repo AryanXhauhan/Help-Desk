@@ -8,6 +8,13 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Proxy API requests to live Render backend
+[[redirects]]
+  from = "/api/*"
+  to = "https://help-desk-2-m016.onrender.com/api/:splat"
+  status = 200
+  force = true
+
 # SPA Fallback: Redirect all page routes to index.html for React Router DOM
 [[redirects]]
   from = "/*"
