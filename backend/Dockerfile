@@ -1,5 +1,8 @@
 # Production Dockerfile for HelpDesk Backend
-FROM node:22-alpine AS builder
+FROM node:22-slim AS builder
+
+# Install OpenSSL for Prisma
+RUN apt-get update -y && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -14,7 +17,10 @@ COPY src ./src
 RUN npx prisma generate
 RUN npm run build
 
-FROM node:22-alpine AS runner
+FROM node:22-slim AS runner
+
+# Install OpenSSL for Prisma runtime
+RUN apt-get update -y && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
