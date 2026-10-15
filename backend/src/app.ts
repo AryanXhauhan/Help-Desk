@@ -71,6 +71,17 @@ export const createApp = (): express.Application => {
     next();
   });
 
+  // Root Endpoint / Health ping
+  app.get('/', (req, res) => {
+    res.status(200).json({
+      name: 'HelpDesk API',
+      status: 'healthy',
+      version: '1.0.0',
+      docs: '/api/docs',
+      health: '/api/v1/health',
+    });
+  });
+
   // API Documentation (Swagger)
   app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
